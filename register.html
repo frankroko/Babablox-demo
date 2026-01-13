@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Babablox - สมัครสมาชิก</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .register-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 450px;
+            padding: 3rem;
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .register-header h1 {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .register-header p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-row .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .password-requirements {
+            background-color: #f0f0f0;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        .password-requirements ul {
+            margin-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .password-requirements li {
+            margin-bottom: 0.3rem;
+        }
+
+        .terms-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .terms-checkbox input {
+            width: auto;
+            margin: 0;
+        }
+
+        .terms-checkbox a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .terms-checkbox a:hover {
+            text-decoration: underline;
+        }
+
+        .register-button {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .register-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            transition: opacity 0.3s;
+        }
+
+        .login-link a:hover {
+            opacity: 0.8;
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            color: #155724;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideDown 0.3s ease-in-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .register-container {
+                padding: 2rem;
+            }
+
+            .register-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="success-message" id="successMessage">
+            <strong>Welcome to Babablox!</strong><br>
+            <p>Your account has been created successfully
+                บัญชีของคุณได้ถูกสร้างขึ้นเรียบร้อยแล้ว. กลับไปหน้าหลัก...</p>
+        </div>
+
+        <div class="register-header">
+            <a href="index.html" class="logo-link">Babablox</a>
+            <p>สร้างบัญชีของคุณ</p>
+        </div>
+
+        <form id="registerForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstname">ชื่อ</label>
+                    <input type="text" id="firstname" name="firstname" placeholder="First name" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastname">นามสกุล</label>
+                    <input type="text" id="lastname" name="lastname" placeholder="Last name" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">อีเมล</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">เบอร์โทรศัพท์</label>
+                <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
+            </div>
+
+            <div class="form-group">
+                <label for="password">รหัสผ่าน</label>
+                <input type="password" id="password" name="password" placeholder="Create a password" required>
+            </div>
+
+            <div class="password-requirements">
+                <strong>ยืนยันรหัสผ่าน:</strong>
+                <ul>
+                    <li>At least 8 characters long   </li>
+                 <li>ความยาวอย่างน้อย 8 ตัวอักษร</li>
+                    <li>Contains uppercase and lowercase letters</li>
+                           </li> ประกอบด้วยอักษรตัวพิมพ์ใหญ่และตัวพิมพ์เล็ก
+                    </li>
+                    <li>Contains numbers and special characters</li>
+                            </li>ประกอบด้วยตัวเลขและอักขระพิเศษ
+                    </li>
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm-password">ยืนยันรหัสผ่าน</label>
+                <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
+            </div>
+
+            <div class="terms-checkbox">
+                <input type="checkbox" id="terms" name="terms" required>
+                <label for="terms" style="margin: 0;">I agree to the <a href="#">Terms and Conditions</a></label>
+            </div>
+
+            <button type="submit" class="register-button">สร้างบัญชีของคุณ</button>
+        </form>
+
+        <div class="login-link">
+           คุณมีบัญชีแล้วหรือยัง?<a href="login.html">ล็อคอินตรงนี้</a>
+        </div>
+    </div>
+
+    <script>
+        const registerForm = document.getElementById('registerForm');
+        const successMessage = document.getElementById('successMessage');
+
+        registerForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Get form values
+            const firstname = document.getElementById('firstname').value;
+            const lastname = document.getElementById('lastname').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const termsAccepted = document.getElementById('terms').checked;
+
+            // Validate that passwords match
+            if (password !== confirmPassword) {
+                alert('Passwords do not match. Please try again.');
+                return;
+            }
+
+            // Validate that terms are accepted
+            if (!termsAccepted) {
+                alert('Please accept the Terms and Conditions.');
+                return;
+            }
+
+            // Show success message
+            successMessage.classList.add('show');
+            registerForm.style.display = 'none';
+            document.querySelector('.register-header').style.display = 'none';
+            document.querySelector('.login-link').style.display = 'none';
+
+            // Store user data in localStorage (simulating login)
+            const userData = {
+                firstname: firstname,
+                lastname: lastname,
+                email: email,
+                isLoggedIn: true
+            };
+            localStorage.setItem('currentUser', JSON.stringify(userData));
+            localStorage.setItem('isLoggedIn', 'true');
+
+            // Redirect to home page after 2.5 seconds
+            setTimeout(function() {
+                window.location.href = 'index.html';
+            }, 2500);
+        });
+    </script>

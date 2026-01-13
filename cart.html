@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตระกร้าสินค้า - Babablox</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .cart-container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .cart-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .cart-header h1 {
+            color: #4a0080;
+            font-size: 2.5rem;
+        }
+        .cart-items {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        .item-info {
+            flex: 1;
+        }
+        .item-info h3 {
+            color: #4a0080;
+            margin-bottom: 10px;
+        }
+        .item-price {
+            color: #ff6b00;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        .item-quantity {
+            margin: 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .quantity-input {
+            width: 60px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .remove-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .remove-btn:hover {
+            background-color: #c0392b;
+        }
+        .cart-empty {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .cart-summary {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 400px;
+            margin-left: auto;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        .summary-row.total {
+            border-top: 2px solid #e0e0e0;
+            padding-top: 15px;
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: #4a0080;
+        }
+        .checkout-btn {
+            width: 100%;
+            background-color: #ff6b00;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        .checkout-btn:hover {
+            background-color: #e55a00;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="index.html" class="logo">Babablox</a>
+            <ul class="nav-links">
+                <li><a href="index.html">หน้าหลัก</a></li>
+                <li><a href="cart.html">ตระกร้าสินค้า</a></li>
+                <li><a href="https://line.me/ti/p/mrgy7EasBd" target="_blank">ติดต่อ</a></li>
+                <li id="navAuthLinks">
+                    <a href="login.html" class="login-link">ล็อคอิน</a> | <a href="register.html">สมัครสมาชิก </a>
+                </li>
+                <li id="navUserProfile" style="display: none;">
+                    <span id="userGreeting"></span> | <a href="#" id="logoutBtn">ล็อคเอาท์</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="cart-container">
+        <div class="cart-header">
+            <h1> ตระกร้าสินค้า</h1>
+        </div>
+
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items will be dynamically added here -->
+        </div>
+
+        <div class="cart-summary" id="cartSummary" style="display: none;">
+            <div class="summary-row">
+                <span>Subtotal:</span>
+                <span id="subtotal">฿19</span>
+            </div>
+            <div class="summary-row">
+                <span>Tax:</span>
+                <span id="tax">฿19</span>
+            </div>
+            <div class="summary-row total">
+                <span>Total:</span>
+                <span id="total">฿59</span>
+            </div>
+            <button class="checkout-btn">Place Order</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Babablox. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Load cart from localStorage and display items
+        function loadCart() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartItemsContainer = document.getElementById('cartItems');
+            const cartSummary = document.getElementById('cartSummary');
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<div class="cart-empty"><p>Your cart is empty. <a href="index.html">Continue shopping</a></p></div>';
+                cartSummary.style.display = 'none';
+                return;
+            }
+
+            let html = '';
+            let subtotal = 0;
+
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                html += `
+                    <div class="cart-item">
+                        <div class="item-info">
+                            <h3>${item.name}</h3>
+                            <p class="item-price">฿${item.price}</p>
+                        </div>
+                        <div class="item-quantity">
+                            <button onclick="updateQuantity(${index}, -1)">-</button>
+                            <input type="number" class="quantity-input" value="${item.quantity}" readonly>
+                            <button onclick="updateQuantity(${index}, 1)">+</button>
+                        </div>
+                        <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+                    </div>
+                `;
+            });
+
+            cartItemsContainer.innerHTML = html;
+
+            const tax = subtotal * 0.07;
+            const total = subtotal + tax;
+
+            document.getElementById('subtotal').textContent = '฿' + subtotal.toFixed(2);
+            document.getElementById('tax').textContent = '฿' + tax.toFixed(2);
+            document.getElementById('total').textContent = '฿' + total.toFixed(2);
+            cartSummary.style.display = 'block';
+
+            // Add checkout button listener
+            document.querySelector('.checkout-btn').addEventListener('click', function() {
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const tax = subtotal * 0.07;
+                const total = subtotal + tax;
+
+                // Save order to order history
+                const orderHistory = JSON.parse(localStorage.getItem('orderHistory')) || [];
+                const newOrder = {
+                    items: cart,
+                    subtotal: subtotal,
+                    tax: tax,
+                    total: total,
+                    date: new Date().toISOString()
+                };
+                orderHistory.push(newOrder);
+                localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
+
+                alert('Order placed successfully! Thank you for your purchase.');
+                localStorage.removeItem('cart');
+                window.location.href = 'order-history.html';
+            });
+        }
+
+        function updateQuantity(index, change) {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart[index].quantity += change;
+            if (cart[index].quantity < 1) {
+                cart.splice(index, 1);
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            loadCart();
+        }
+
+        function removeItem(index) {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            loadCart();
+        }
+
+        // Check login status
+        function checkLoginStatus() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const currentUser = localStorage.getItem('currentUser');
+
+            const navAuthLinks = document.getElementById('navAuthLinks');
+            const navUserProfile = document.getElementById('navUserProfile');
+            const userGreeting = document.getElementById('userGreeting');
+
+            if (isLoggedIn === 'true' && currentUser) {
+                const user = JSON.parse(currentUser);
+                const displayName = user.firstname || user.email.split('@')[0];
+
+                navAuthLinks.style.display = 'none';
+                navUserProfile.style.display = 'block';
+                userGreeting.textContent = `Welcome, ${displayName}!`;
+
+                document.getElementById('logoutBtn').addEventListener('click', function(event) {
+                    event.preventDefault();
+                    logout();
+                });
+            } else {
+                navAuthLinks.style.display = 'block';
+                navUserProfile.style.display = 'none';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('isLoggedIn');
+            alert('You have been logged out.');
+            window.location.reload();
+        }
+
+        // Initialize cart on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+            loadCart();
+        });
+    </script>
+</body>
+</html>

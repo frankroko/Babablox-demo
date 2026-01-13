@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Babablox - Homepage</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="index.html" class="logo">Babablox</a>
+            <ul class="nav-links">
+                <li><a href="#home">หน้าหลัก </a></li>
+                <li><a href="cart.html">ตระกร้า </a></li>
+                <li><a href="order-history.html">ประวัติการสั่งซื้อ</a></li>
+                <li><a href="https://line.me/ti/p/mrgy7EasBd" target="_blank">ติดต่อ</a></li>
+                <li id="navAuthLinks">
+                    <a href="login.html" class="login-link">ล็อคอิน</a> | <a href="register.html">สมัครสมาชิก</a>
+                </li>
+                <li id="navUserProfile" style="display: none;">
+                    <span id="userGreeting"></span> | <a href="#" id="logoutBtn">ล็อคเอาท์</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Welcome to Babablox</h1>
+            <p>เว็บไซต์นี้ เป็นเว็บไซต์สำหรับซื้อ - ขาย ไอดีเกม </p>
+            <button class="cta-button">Get Started</button>
+        </div>
+    </section>
+
+
+
+  
+    <section id="products" class="products">
+        <h2>สินค้าแนะนำ</h2>
+        <div class="product-grid">
+            <div class="product-card">
+                <div class="product-image">
+                </div>
+                <img src ="unnamed.png" alt="Golden Star">
+                <h3>การันตีผลแสง</h3>
+                <p class="product-price">฿19</p>
+                <p class="product-description">A beautiful golden star product. Perfect for decoration or collection.</p>
+                <div class="product-buttons">
+                    <button class="add-to-cart-btn">สั่งซื้อสินค้า    </button>
+                    <button class="buy-now-btn">Buy Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Babablox. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Check if user is logged in
+        function checkLoginStatus() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const currentUser = localStorage.getItem('currentUser');
+
+            const navAuthLinks = document.getElementById('navAuthLinks');
+            const navUserProfile = document.getElementById('navUserProfile');
+            const userGreeting = document.getElementById('userGreeting');
+
+            if (isLoggedIn === 'true' && currentUser) {
+                const user = JSON.parse(currentUser);
+                const displayName = user.firstname || user.email.split('@')[0];
+
+                // Show user profile section and hide login links
+                navAuthLinks.style.display = 'none';
+                navUserProfile.style.display = 'block';
+                userGreeting.textContent = `Welcome, ${displayName}!`;
+
+                // Add logout functionality
+                document.getElementById('logoutBtn').addEventListener('click', function(event) {
+                    event.preventDefault();
+                    logout();
+                });
+            } else {
+                // Show login links and hide user profile
+                navAuthLinks.style.display = 'block';
+                navUserProfile.style.display = 'none';
+            }
+        }
+
+        function logout() {
+            // Clear user data from localStorage
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('isLoggedIn');
+
+            // Redirect to home page
+            alert('You have been logged out.');
+            window.location.reload();
+        }
+
+        // Add to Cart functionality
+        function addToCart(productName, productPrice) {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            // Check if product already exists in cart
+            const existingItem = cart.find(item => item.name === productName);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    name: productName,
+                    price: productPrice,
+                    quantity: 1
+                });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert(productName + ' added to cart!');
+            window.location.href = 'cart.html';
+        }
+
+        // Buy Now functionality
+        function buyNow(productName, productPrice) {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.push({
+                name: productName,
+                price: productPrice,
+                quantity: 1
+            });
+            localStorage.setItem('cart', JSON.stringify(cart));
+            window.location.href = 'cart.html';
+        }
+
+        // Initialize buttons on page load
+        function initializeButtons() {
+            const addToCartBtns = document.querySelectorAll('.add-to-cart-btn');
+            const buyNowBtns = document.querySelectorAll('.buy-now-btn');
+            
+            addToCartBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productCard = this.closest('.product-card');
+                    const productName = productCard.querySelector('h3').textContent;
+                    const productPrice = parseInt(productCard.querySelector('.product-price').textContent);
+                    addToCart(productName, productPrice);
+                });
+            });
+            
+            buyNowBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productCard = this.closest('.product-card');
+                    const productName = productCard.querySelector('h3').textContent;
+                    const productPrice = parseInt(productCard.querySelector('.product-price').textContent);
+                    buyNow(productName, productPrice);
+                });
+            });
+        }
+
+        // Check login status and initialize buttons when page loads
+        window.addEventListener('load', function() {
+            checkLoginStatus();
+            initializeButtons();
+        });
+    </script>
+</body>
+</html>
