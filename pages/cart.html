@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตระกร้าสินค้า - Babablox</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/cart.css">    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script></head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="../index.html" class="logo">Babablox</a>
+            <ul class="nav-links">
+                <li><a href="../index.html">หน้าหลัก</a></li>
+                <li><a href="product.html">ผลิตภัณพ์</a></li>
+                <li><a href="cart.html">ตะกร้า</a></li>
+                <li><a href="order-history.html">ประวัติการสั่งซื้อ</a></li>
+                <li><a href="https://line.me/ti/p/mrgy7EasBd" target="_blank">ติดต่อ</a></li>
+                <li id="navAuthLinks">
+                    <a href="login.html" class="login-link">ล็อคอิน</a> | <a href="register.html">สมัครสมาชิก</a>
+                </li>
+                <li id="navUserProfile" style="display: none;">
+                    <span id="userGreeting"></span> | <a href="#" id="logoutBtn">ล็อคเอาท์</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="cart-container">
+        <div class="cart-header">
+            <h1> ตะกร้าสินค้า</h1>
+        </div>
+
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items will be dynamically added here -->
+        </div>
+
+        <div class="cart-summary" id="cartSummary" style="display: none;">
+            <div class="summary-row">
+                <span>Subtotal:</span>
+                <span id="subtotal">฿0</span>
+            </div>
+            <div class="summary-row total">
+                <span>Total:</span>
+                <span id="total">฿0</span>
+            </div>
+            <div class="summary-buttons">
+                <button class="checkout-btn">Place Order</button>
+                <button class="clear-cart-btn" onclick="clearCart()">Clear Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Babablox. All rights reserved.</p>
+    </footer>
+
+    <script src="../js/cart.js"></script>
+</body>
+</html>

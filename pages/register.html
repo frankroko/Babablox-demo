@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Babablox - สมัครสมาชิก</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/register.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="register-page">
+    <div class="register-container">
+        <div class="success-message" id="successMessage">
+            <strong>Welcome to Babablox!</strong><br>
+            <p>Your account has been created successfully
+                บัญชีของคุณได้ถูกสร้างขึ้นเรียบร้อยแล้ว. กลับไปหน้าหลัก...</p>
+        </div>
+
+        <div class="register-header">
+            <a href="../index.html" class="logo-link">Babablox</a>
+            <p>สร้างบัญชีของคุณ</p>
+        </div>
+
+        <form id="registerForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstname">ชื่อ</label>
+                    <input type="text" id="firstname" name="firstname" placeholder="First name" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastname">นามสกุล</label>
+                    <input type="text" id="lastname" name="lastname" placeholder="Last name" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">อีเมล</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">เบอร์โทรศัพท์</label>
+                <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
+            </div>
+
+            <div class="form-group">
+                <label for="password">รหัสผ่าน</label>
+                <input type="password" id="password" name="password" placeholder="Create a password" required>
+            </div>
+
+            <div class="password-requirements">
+                <strong>ข้อกำหนดรหัสผ่าน:</strong>
+                <ul>
+                    <li>ความยาวอย่างน้อย 8 ตัวอักษร</li>
+                    <li>ประกอบด้วยอักษรตัวพิมพ์ใหญ่และตัวพิมพ์เล็ก</li>
+                    <li>ประกอบด้วยตัวเลขและอักขระพิเศษ</li>
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm-password">ยืนยันรหัสผ่าน</label>
+                <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
+            </div>
+
+            <div class="terms-checkbox">
+                <input type="checkbox" id="terms" name="terms" required>
+                <label for="terms" style="margin: 0;">I agree to the <a href="#">Terms and Conditions</a></label>
+            </div>
+
+            <button type="submit" class="register-button">สร้างบัญชีของคุณ</button>
+        </form>
+
+        <div class="login-link">
+            คุณมีบัญชีแล้วหรือ? <a href="login.html">ล็อคอินตรงนี้</a>
+        </div>
+    </div>
+
+    <script src="../js/register.js"></script>
+</body>
+</html>
