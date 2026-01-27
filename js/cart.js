@@ -1,4 +1,4 @@
-// Load cart from localStorage and display items
+﻿// Load cart from localStorage and display items
 function loadCart() {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     const cartItemsContainer = document.getElementById('cartItems');
@@ -23,7 +23,7 @@ function loadCart() {
                     <p class="item-price">฿${item.price}</p>
                 </div>
                 <div class="item-quantity">
-                    <button class="qty-btn qty-minus" onclick="updateQuantity(${index}, -1)" title="Decrease quantity">−</button>
+                    <button class="qty-btn qty-minus" onclick="updateQuantity(${index}, -1)" title="Decrease quantity">-</button>
                     <input type="number" class="quantity-input" value="${item.quantity}" readonly>
                     <button class="qty-btn qty-plus" onclick="updateQuantity(${index}, 1)" title="Increase quantity">+</button>
                 </div>
@@ -150,3 +150,4 @@ window.addEventListener('DOMContentLoaded', function() {
     checkLoginStatus();
     loadCart();
 });
+

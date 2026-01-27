@@ -1,4 +1,4 @@
-// Check if user is logged in
+﻿// Check if user is logged in
 function checkLoginStatus() {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
     const currentUser = localStorage.getItem('currentUser');
@@ -150,3 +150,4 @@ document.addEventListener('DOMContentLoaded', function() {
     checkLoginStatus();
     initializeButtons();
 });
+
