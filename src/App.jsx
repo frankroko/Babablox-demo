@@ -11,7 +11,10 @@ import NotFoundPage from "./pages/NotFoundPage.jsx";
 import { AppProvider, useAppContext } from "./utils/app-context.jsx";
 
 function RequireAuth({ children }) {
-  const { user } = useAppContext();
+  const { user, authReady } = useAppContext();
+  if (!authReady) {
+    return null;
+  }
   if (!user) {
     return <Navigate to="/login" replace />;
   }

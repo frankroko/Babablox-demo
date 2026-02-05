@@ -10,6 +10,9 @@ A Thai-language e-commerce demo for buying/selling game accounts and in-game ite
 - Tailwind CSS v4
 - SweetAlert2
 - Sharp (image optimization script)
+- Express 5
+- MongoDB (Mongoose)
+- JWT + bcrypt authentication
 
 ## Project Structure
 
@@ -61,6 +64,68 @@ Preview the production build locally:
 npm run preview
 ```
 
+## Backend Setup
+
+Create a `.env` file using `.env.example` as a starting point.
+
+Required environment variables:
+- `MONGODB_URI`
+- `JWT_SECRET`
+
+Optional environment variables:
+- `PORT`
+- `MONGODB_DBNAME`
+- `JWT_EXPIRES_IN`
+- `CORS_ORIGIN`
+- `ADMIN_EMAIL`
+- `JWT_COOKIE`
+- `COOKIE_SECURE`
+- `VITE_API_URL` (for the frontend)
+
+Run the API server:
+
+```bash
+npm run dev:server
+```
+
+Seed the product catalog (optional):
+
+```bash
+npm run seed:products
+```
+
+## API Overview
+
+Auth:
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
+- `POST /api/auth/logout`
+
+Products:
+- `GET /api/products`
+- `GET /api/products/:id`
+- `POST /api/products` (admin)
+- `PATCH /api/products/:id` (admin)
+- `DELETE /api/products/:id` (admin)
+
+Cart:
+- `GET /api/cart`
+- `POST /api/cart/items`
+- `PATCH /api/cart/items/:itemId`
+- `DELETE /api/cart/items/:itemId`
+- `DELETE /api/cart`
+
+Orders:
+- `POST /api/orders`
+- `GET /api/orders`
+- `GET /api/orders/:id`
+- `PATCH /api/orders/:id/status` (admin)
+
+Admin:
+- `GET /api/admin/users`
+- `GET /api/admin/orders`
+
 ## Image Optimization
 
 Optimize images into WebP files under `public/assets-optimized`:
@@ -75,9 +140,10 @@ Notes:
 
 ## Key Behavior
 
-- Auth, cart, and order history are stored in `localStorage`.
+- Auth uses JWT stored in `localStorage`; cart and orders are loaded from the API.
 - Orders route (`/orders`) requires login.
 - The mobile navbar uses a burger menu with an animated close state.
+- The frontend now uses the backend APIs for auth, cart, and orders.
 
 ## Scripts
 

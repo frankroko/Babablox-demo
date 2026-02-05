@@ -12,36 +12,43 @@ export function setJSON(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
+export function getAuthToken() {
+  return localStorage.getItem("authToken");
+}
+
+export function setAuthToken(token) {
+  if (token) {
+    localStorage.setItem("authToken", token);
+  }
+}
+
+export function clearAuthToken() {
+  localStorage.removeItem("authToken");
+}
+
 export function getCurrentUser() {
   return getJSON("currentUser", null);
 }
 
-export function isLoggedIn() {
-  return localStorage.getItem("isLoggedIn") === "true" && !!getCurrentUser();
-}
-
-export function setLoggedInUser(user) {
+export function setCurrentUser(user) {
   setJSON("currentUser", user);
-  localStorage.setItem("isLoggedIn", "true");
 }
 
 export function clearAuth() {
   localStorage.removeItem("currentUser");
-  localStorage.removeItem("isLoggedIn");
+  clearAuthToken();
 }
 
-export function getCart() {
-  return getJSON("cart", []);
+export function getRememberedEmail() {
+  return localStorage.getItem("rememberedEmail");
 }
 
-export function setCart(cart) {
-  setJSON("cart", cart);
+export function setRememberedEmail(email) {
+  if (email) {
+    localStorage.setItem("rememberedEmail", email);
+  }
 }
 
-export function getOrderHistory() {
-  return getJSON("orderHistory", []);
-}
-
-export function setOrderHistory(history) {
-  setJSON("orderHistory", history);
+export function clearRememberedEmail() {
+  localStorage.removeItem("rememberedEmail");
 }

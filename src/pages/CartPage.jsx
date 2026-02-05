@@ -1,9 +1,9 @@
-﻿import { useMemo, useState } from "react";
-import PageShell from "../components/PageShell.jsx";
-import { confirmAction, toastSuccess } from "../utils/alerts.js";
-import { getCart, getOrderHistory, setCart, setOrderHistory } from "../utils/storage.js";
-import { useAppContext } from "../utils/app-context.jsx";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import PageShell from "../components/PageShell.jsx";
+import { confirmAction, toastError, toastSuccess } from "../utils/alerts.js";
+import { apiFetch } from "../utils/api.js";
+import { useAppContext } from "../utils/app-context.jsx";
 
 function currency(value) {
   return `฿${value.toFixed(2)}`;
@@ -11,33 +11,63 @@ function currency(value) {
 
 export default function CartPage() {
   const navigate = useNavigate();
-  const { refreshCart } = useAppContext();
-  const [cart, setCartState] = useState(() => getCart());
+  const { user, refreshCart, authReady } = useAppContext();
+  const [cart, setCart] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  async function loadCart() {
+    if (!user) {
+      setCart([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      const data = await apiFetch("/api/cart");
+      setCart(data.items || []);
+    } catch (err) {
+      setError(err.message || "โหลดตะกร้าไม่สำเร็จ");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (authReady) {
+      loadCart();
+    }
+  }, [user, authReady]);
 
   const subtotal = useMemo(
     () => cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
     [cart]
   );
 
-  function persist(nextCart) {
-    setCartState(nextCart);
-    setCart(nextCart);
-    refreshCart();
-  }
-
-  function updateQuantity(index, delta) {
-    const next = [...cart];
-    next[index] = { ...next[index], quantity: next[index].quantity + delta };
-    if (next[index].quantity < 1) {
-      next.splice(index, 1);
+  async function updateQuantity(itemId, nextQuantity) {
+    try {
+      const data = await apiFetch(`/api/cart/items/${itemId}`, {
+        method: "PATCH",
+        body: { quantity: nextQuantity },
+      });
+      setCart(data.items || []);
+      await refreshCart();
+    } catch (err) {
+      await toastError("อัปเดตจำนวนไม่สำเร็จ", err.message || "กรุณาลองใหม่");
     }
-    persist(next);
   }
 
-  function removeItem(index) {
-    const next = [...cart];
-    next.splice(index, 1);
-    persist(next);
+  async function removeItem(itemId) {
+    try {
+      const data = await apiFetch(`/api/cart/items/${itemId}`, {
+        method: "DELETE",
+      });
+      setCart(data.items || []);
+      await refreshCart();
+    } catch (err) {
+      await toastError("ลบสินค้าไม่สำเร็จ", err.message || "กรุณาลองใหม่");
+    }
   }
 
   async function clearCart() {
@@ -47,23 +77,70 @@ export default function CartPage() {
       confirmText: "ใช่, ล้างเลย",
     });
     if (result.isConfirmed) {
-      persist([]);
+      try {
+        const data = await apiFetch("/api/cart", { method: "DELETE" });
+        setCart(data.items || []);
+        await refreshCart();
+      } catch (err) {
+        await toastError("ล้างตะกร้าไม่สำเร็จ", err.message || "กรุณาลองใหม่");
+      }
     }
   }
 
   async function checkout() {
     if (cart.length === 0) return;
-    const history = getOrderHistory();
-    history.push({
-      items: cart,
-      subtotal,
-      total: subtotal,
-      date: new Date().toISOString(),
-    });
-    setOrderHistory(history);
-    persist([]);
-    await toastSuccess("สั่งซื้อสำเร็จ", "ขอบคุณที่อุดหนุน");
-    navigate("/orders");
+    try {
+      await apiFetch("/api/orders", {
+        method: "POST",
+        body: { paymentMethod: "manual", paymentStatus: "unpaid" },
+      });
+      setCart([]);
+      await refreshCart();
+      await toastSuccess("สั่งซื้อสำเร็จ", "ขอบคุณที่อุดหนุน");
+      navigate("/orders");
+    } catch (err) {
+      await toastError("สั่งซื้อไม่สำเร็จ", err.message || "กรุณาลองใหม่");
+    }
+  }
+
+  if (!authReady) {
+    return (
+      <PageShell title="ตะกร้าสินค้า" subtitle="กำลังตรวจสอบบัญชีผู้ใช้">
+        <div className="brand-card rounded-2xl p-6 text-slate-600">กำลังโหลด...</div>
+      </PageShell>
+    );
+  }
+
+  if (!user) {
+    return (
+      <PageShell title="ตะกร้าสินค้า" subtitle="เข้าสู่ระบบเพื่อดูตะกร้าของคุณ">
+        <div className="brand-card flex flex-col items-start gap-3 rounded-2xl p-6">
+          <p className="text-base text-slate-700">กรุณาล็อกอินเพื่อใช้งานตะกร้าสินค้า</p>
+          <Link
+            to="/login"
+            className="rounded-xl bg-[#4a0080] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#2d004d] hover:text-white visited:text-white active:text-white focus:text-white"
+          >
+            ไปที่หน้าเข้าสู่ระบบ
+          </Link>
+        </div>
+      </PageShell>
+    );
+  }
+
+  if (loading) {
+    return (
+      <PageShell title="ตะกร้าสินค้า" subtitle="กำลังโหลดตะกร้าของคุณ">
+        <div className="brand-card rounded-2xl p-6 text-slate-600">กำลังโหลด...</div>
+      </PageShell>
+    );
+  }
+
+  if (error) {
+    return (
+      <PageShell title="ตะกร้าสินค้า" subtitle="เกิดข้อผิดพลาด">
+        <div className="brand-card rounded-2xl p-6 text-red-600">{error}</div>
+      </PageShell>
+    );
   }
 
   if (cart.length === 0) {
@@ -86,10 +163,10 @@ export default function CartPage() {
     <PageShell title="ตะกร้าสินค้า" subtitle="ตรวจสอบรายการก่อนชำระเงิน">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         <section className="space-y-4">
-          {cart.map((item, index) => {
+          {cart.map((item) => {
             const total = item.price * item.quantity;
             return (
-              <article key={`${item.name}-${index}`} className="brand-card rounded-2xl p-4">
+              <article key={item._id} className="brand-card rounded-2xl p-4">
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div>
                     <h3 className="text-lg font-extrabold text-[#2a004d]">{item.name}</h3>
@@ -100,7 +177,7 @@ export default function CartPage() {
                     <div className="inline-flex items-center overflow-hidden rounded-xl border border-slate-200">
                       <button
                         type="button"
-                        onClick={() => updateQuantity(index, -1)}
+                        onClick={() => updateQuantity(item._id, item.quantity - 1)}
                         className="px-3 py-2 text-lg font-black text-[#4a0080] transition hover:bg-[#4a0080] hover:text-white"
                         aria-label={`ลดจำนวน ${item.name}`}
                       >
@@ -109,7 +186,7 @@ export default function CartPage() {
                       <span className="min-w-12 px-3 py-2 text-center text-sm font-bold">{item.quantity}</span>
                       <button
                         type="button"
-                        onClick={() => updateQuantity(index, 1)}
+                        onClick={() => updateQuantity(item._id, item.quantity + 1)}
                         className="px-3 py-2 text-lg font-black text-[#4a0080] transition hover:bg-[#4a0080] hover:text-white"
                         aria-label={`เพิ่มจำนวน ${item.name}`}
                       >
@@ -123,7 +200,7 @@ export default function CartPage() {
 
                     <button
                       type="button"
-                      onClick={() => removeItem(index)}
+                      onClick={() => removeItem(item._id)}
                       className="rounded-xl border border-red-200 px-4 py-2 text-sm font-bold text-red-600 transition hover:bg-red-50"
                     >
                       ลบ

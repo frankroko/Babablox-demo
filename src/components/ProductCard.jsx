@@ -1,40 +1,43 @@
-﻿import { useNavigate } from "react-router-dom";
-import { toastError, toastSuccess } from "../utils/alerts.js";
-import { getCart, setCart } from "../utils/storage.js";
+import { useNavigate } from "react-router-dom";
+import { toastError, toastSuccess, toastWarning } from "../utils/alerts.js";
+import { apiFetch } from "../utils/api.js";
 import { useAppContext } from "../utils/app-context.jsx";
 
 export default function ProductCard({ product }) {
   const navigate = useNavigate();
-  const { refreshCart } = useAppContext();
-
-  function addItem(quantity = 1) {
-    if (!product?.name || !product?.price) {
-      toastError("เกิดข้อผิดพลาด", "ไม่สามารถเพิ่มสินค้านี้ได้");
-      return null;
-    }
-
-    const cart = getCart();
-    const existing = cart.find((item) => item.name === product.name);
-    if (existing) {
-      existing.quantity += quantity;
-    } else {
-      cart.push({ name: product.name, price: product.price, quantity });
-    }
-    setCart(cart);
-    refreshCart();
-    return cart;
-  }
+  const { user, refreshCart } = useAppContext();
 
   async function handleAddToCart() {
-    const cart = addItem(1);
-    if (!cart) return;
-    await toastSuccess("เพิ่มลงตะกร้าแล้ว", product.name);
+    if (!user) {
+      await toastWarning("กรุณาเข้าสู่ระบบ", "ล็อกอินก่อนเพิ่มสินค้าในตะกร้า");
+      navigate("/login");
+      return false;
+    }
+
+    if (!product?._id) {
+      toastError("เกิดข้อผิดพลาด", "ไม่สามารถเพิ่มสินค้านี้ได้");
+      return false;
+    }
+
+    try {
+      await apiFetch("/api/cart/items", {
+        method: "POST",
+        body: { productId: product._id, quantity: 1 },
+      });
+      await refreshCart();
+      await toastSuccess("เพิ่มลงตะกร้าแล้ว", product.name);
+      return true;
+    } catch (error) {
+      await toastError("เพิ่มสินค้าไม่สำเร็จ", error.message || "กรุณาลองใหม่");
+      return false;
+    }
   }
 
-  function handleBuyNow() {
-    const cart = addItem(1);
-    if (!cart) return;
-    navigate("/cart");
+  async function handleBuyNow() {
+    const ok = await handleAddToCart();
+    if (ok) {
+      navigate("/cart");
+    }
   }
 
   return (

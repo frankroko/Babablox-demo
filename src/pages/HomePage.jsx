@@ -1,10 +1,41 @@
-﻿import PageShell from "../components/PageShell.jsx";
+import { useEffect, useState } from "react";
+import PageShell from "../components/PageShell.jsx";
 import ProductGrid from "../components/ProductGrid.jsx";
-import { products } from "../data/products.js";
-
-const featured = products.slice(0, 4);
+import { apiFetch } from "../utils/api.js";
 
 export default function HomePage() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadProducts() {
+      setLoading(true);
+      try {
+        const data = await apiFetch("/api/products?active=true&limit=8");
+        if (active) {
+          setProducts(data.items || []);
+        }
+      } catch (error) {
+        if (active) {
+          setProducts([]);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadProducts();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const featured = products.slice(0, 4);
+
   return (
     <>
       <section className="brand-gradient text-white">
@@ -36,21 +67,32 @@ export default function HomePage() {
             <div className="absolute -inset-6 rounded-[2.5rem] bg-white/10 blur-3xl" aria-hidden="true" />
             <div className="relative rounded-[2rem] border border-white/15 bg-white/10 p-6 shadow-2xl backdrop-blur">
               <p className="text-sm font-bold text-white/70">สินค้ายอดนิยมตอนนี้</p>
-              <ul className="mt-4 space-y-3 text-sm">
-                {featured.slice(0, 3).map((item) => (
-                  <li key={item.name} className="flex items-center justify-between rounded-xl bg-white/10 px-4 py-3">
-                    <span className="font-bold">{item.name}</span>
-                    <span className="font-black text-[var(--brand-accent)]">฿{item.price}</span>
-                  </li>
-                ))}
-              </ul>
+              {loading ? (
+                <p className="mt-4 text-sm text-white/70">กำลังโหลดรายการ...</p>
+              ) : (
+                <ul className="mt-4 space-y-3 text-sm">
+                  {featured.slice(0, 3).map((item) => (
+                    <li key={item._id} className="flex items-center justify-between rounded-xl bg-white/10 px-4 py-3">
+                      <span className="font-bold">{item.name}</span>
+                      <span className="font-black text-[var(--brand-accent)]">฿{item.price}</span>
+                    </li>
+                  ))}
+                  {featured.length === 0 ? (
+                    <li className="rounded-xl bg-white/10 px-4 py-3 text-white/70">ยังไม่มีสินค้า</li>
+                  ) : null}
+                </ul>
+              )}
             </div>
           </div>
         </div>
       </section>
 
       <PageShell title="สินค้าแนะนำสำหรับคุณ" subtitle="คัดมาให้พร้อมเริ่มซื้อได้ทันที">
-        <ProductGrid products={featured} />
+        {loading ? (
+          <div className="brand-card rounded-2xl p-6 text-slate-600">กำลังโหลดสินค้า...</div>
+        ) : (
+          <ProductGrid products={featured} />
+        )}
       </PageShell>
     </>
   );

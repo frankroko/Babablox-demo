@@ -7,6 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "server": "node server/index.js",
+    "dev:server": "node --watch server/index.js",
+    "seed:products": "node server/seed/products.js",
     "optimize:images": "node ./scripts/optimize-images.mjs"
   },
   "repository": {
@@ -22,6 +25,13 @@
   },
   "homepage": "https://github.com/frankroko/Babablox-demo#readme",
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^5.0.0",
+    "dotenv": "^16.4.5",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.10.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.13.0",

@@ -1,7 +1,8 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAppContext } from "../utils/app-context.jsx";
 import { toastSuccess } from "../utils/alerts.js";
+import { apiFetch } from "../utils/api.js";
 import { clearAuth } from "../utils/storage.js";
 
 const navItems = [
@@ -12,7 +13,7 @@ const navItems = [
 ];
 
 export default function Navbar() {
-  const { user, cartCount, refreshAuth } = useAppContext();
+  const { user, cartCount, setUser, setCartCount } = useAppContext();
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -33,13 +34,19 @@ export default function Navbar() {
 
   async function handleLogout(event) {
     event.preventDefault();
+    try {
+      await apiFetch("/api/auth/logout", { method: "POST" });
+    } catch (error) {
+      // Ignore network errors and still clear local auth state.
+    }
     clearAuth();
-    refreshAuth();
+    setUser(null);
+    setCartCount(0);
     await toastSuccess("ออกจากระบบแล้ว", "แล้วพบกันใหม่");
     navigate("/");
   }
 
-  const greeting = user?.firstname || user?.email?.split("@")[0] || "เพื่อน";
+  const greeting = user?.name || user?.firstname || user?.email?.split("@")[0] || "เพื่อน";
 
   return (
     <header className="sticky top-0 z-50 brand-gradient text-white shadow-[0_12px_40px_rgba(26,0,51,0.35)]">

@@ -1,13 +1,15 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import PageShell from "../components/PageShell.jsx";
 import { toastError, toastSuccess, toastWarning } from "../utils/alerts.js";
-import { setLoggedInUser } from "../utils/storage.js";
+import { apiFetch } from "../utils/api.js";
+import { setAuthToken, setCurrentUser } from "../utils/storage.js";
 import { useAppContext } from "../utils/app-context.jsx";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const { refreshAuth } = useAppContext();
+  const { setUser, refreshCart } = useAppContext();
+  const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     firstname: "",
@@ -40,16 +42,26 @@ export default function RegisterPage() {
       return;
     }
 
-    setLoggedInUser({
-      firstname: form.firstname,
-      lastname: form.lastname,
-      email: form.email,
-      isLoggedIn: true,
-    });
-    refreshAuth();
+    setLoading(true);
+    try {
+      const name = `${form.firstname} ${form.lastname}`.trim();
+      const data = await apiFetch("/api/auth/register", {
+        method: "POST",
+        body: { name, email: form.email, password: form.password },
+      });
 
-    await toastSuccess("สมัครสำเร็จ", "กำลังพาคุณกลับหน้าแรก", 1800);
-    navigate("/");
+      setAuthToken(data.token);
+      setCurrentUser(data.user);
+      setUser(data.user);
+      await refreshCart();
+
+      await toastSuccess("สมัครสำเร็จ", "กำลังพาคุณกลับหน้าแรก", 1800);
+      navigate("/");
+    } catch (error) {
+      await toastError("สมัครสมาชิกไม่สำเร็จ", error.message || "กรุณาลองใหม่อีกครั้ง");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -135,16 +147,15 @@ export default function RegisterPage() {
               onChange={(e) => update("terms", e.target.checked)}
               className="mt-0.5 h-4 w-4 rounded border-slate-300 text-[#4a0080] focus:ring-[#4a0080]"
             />
-            <span>
-              ฉันยอมรับข้อกำหนดและเงื่อนไขของ Babablox
-            </span>
+            <span>ฉันยอมรับข้อกำหนดและเงื่อนไขของ Babablox</span>
           </label>
 
           <button
             type="submit"
-            className="w-full rounded-2xl bg-[var(--brand-accent)] px-4 py-3 text-base font-black text-white transition hover:brightness-95"
+            disabled={loading}
+            className="w-full rounded-2xl bg-[var(--brand-accent)] px-4 py-3 text-base font-black text-white transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            สมัครสมาชิก
+            {loading ? "กำลังสมัคร..." : "สมัครสมาชิก"}
           </button>
 
           <p className="text-center text-sm text-slate-600">
