@@ -14,6 +14,11 @@ export default function ProductCard({ product }) {
       return false;
     }
 
+    if (user?.role === "admin") {
+      await toastWarning("แอดมินไม่สามารถสั่งซื้อได้", "กรุณาใช้บัญชีผู้ใช้ทั่วไป");
+      return false;
+    }
+
     if (!product?._id) {
       toastError("เกิดข้อผิดพลาด", "ไม่สามารถเพิ่มสินค้านี้ได้");
       return false;

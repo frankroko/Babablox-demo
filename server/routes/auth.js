@@ -91,6 +91,15 @@ router.post(
       return;
     }
 
+    if (
+      process.env.ADMIN_EMAIL &&
+      user.email.toLowerCase() === process.env.ADMIN_EMAIL.toLowerCase() &&
+      user.role !== "admin"
+    ) {
+      user.role = "admin";
+      await user.save();
+    }
+
     sendAuthResponse(res, user);
   })
 );

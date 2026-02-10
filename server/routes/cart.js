@@ -6,6 +6,16 @@ import { requireAuth } from "../middleware/auth.js";
 
 const router = express.Router();
 
+const forbidAdmin = (req, res, next) => {
+  if (req.user?.role === "admin") {
+    res.status(403).json({ error: "Admin accounts cannot use cart" });
+    return;
+  }
+  next();
+};
+
+router.use(requireAuth, forbidAdmin);
+
 const getCart = async (userId) => {
   const cart = await Cart.findOne({ user: userId });
   if (cart) {

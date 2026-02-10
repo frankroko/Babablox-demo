@@ -35,3 +35,17 @@ a:not([class]) {
 .brand-ring {
   box-shadow: 0 0 0 3px rgba(74, 0, 128, 0.25);
 }
+
+.hero-cover {
+  background-image: url("/assets/banner.gif");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: clamp(420px, 70vh, 720px);
+}
+
+@media (min-width: 1024px) {
+  .hero-cover {
+    background-position: center top;
+  }
+}

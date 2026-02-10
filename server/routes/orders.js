@@ -10,6 +10,11 @@ router.post(
   "/",
   requireAuth,
   asyncHandler(async (req, res) => {
+    if (req.user.role === "admin") {
+      res.status(403).json({ error: "Admin accounts cannot place orders" });
+      return;
+    }
+
     const cart = await Cart.findOne({ user: req.user._id });
     if (!cart || cart.items.length === 0) {
       res.status(400).json({ error: "Cart is empty" });
@@ -56,6 +61,7 @@ router.get(
         : { user: req.user._id };
 
     const orders = await Order.find(query)
+      .populate("user", "name email")
       .sort({ createdAt: -1 })
       .limit(200);
 
@@ -67,7 +73,7 @@ router.get(
   "/:id",
   requireAuth,
   asyncHandler(async (req, res) => {
-    const order = await Order.findById(req.params.id);
+    const order = await Order.findById(req.params.id).populate("user", "name email");
     if (!order) {
       res.status(404).json({ error: "Order not found" });
       return;

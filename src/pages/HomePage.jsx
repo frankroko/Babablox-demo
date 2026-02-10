@@ -38,11 +38,12 @@ export default function HomePage() {
 
   return (
     <>
-      <section className="brand-gradient text-white">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-16 md:flex-row md:items-center md:justify-between md:px-6 md:py-20">
+      <section className="hero-cover relative text-white">
+        <div className="absolute inset-0 bg-[#1b0036]/75" aria-hidden="true" />
+        <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-16 md:flex-row md:items-center md:justify-between md:px-6 md:py-20">
           <div className="max-w-2xl">
             <p className="text-sm font-bold uppercase tracking-[0.2em] text-white/70">Marketplace</p>
-            <h1 className="mt-3 text-4xl font-black leading-[1.05] md:text-6xl">ซื้อ-ขายไอดีเกมแบบมั่นใจ</h1>
+            <h1 className="mt-3 text-4xl font-black leading-[1.05] md:text-3xl">ซื้อ-ขายไอเท็มเกมแบบมั่นใจ</h1>
             <p className="mt-4 max-w-xl text-base text-white/85 md:text-lg">
               Babablox คือพื้นที่สำหรับซื้อขายไอดีเกมและไอเท็มใน Roblox ที่เรียบง่าย รวดเร็ว และปลอดภัยกว่าเดิม
             </p>
