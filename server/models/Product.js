@@ -13,11 +13,10 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-productSchema.pre("validate", function setSlug(next) {
+productSchema.pre("validate", function setSlug() {
   if (this.isModified("name") || !this.slug) {
     this.slug = slugify(this.name);
   }
-  next();
 });
 
 const Product = mongoose.model("Product", productSchema);

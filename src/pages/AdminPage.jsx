@@ -50,7 +50,7 @@ export default function AdminPage() {
     try {
       const [productData, orderData] = await Promise.all([
         adminApiFetch("/api/products?limit=200"),
-        adminApiFetch("/api/orders?scope=all"),
+        adminApiFetch("/api/admin/orders"),
       ]);
       setProducts(productData.items || []);
       setOrders(orderData.items || []);

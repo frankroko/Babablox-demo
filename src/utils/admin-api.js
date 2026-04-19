@@ -1,6 +1,9 @@
 import { getAdminToken } from "./admin-storage.js";
 
-export const ADMIN_API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+export const ADMIN_API_BASE_URL = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
+
+const adminApiUrl = (path) =>
+  `${ADMIN_API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 
 export async function adminApiFetch(path, options = {}) {
   const { method = "GET", body, headers = {}, token } = options;
@@ -14,11 +17,17 @@ export async function adminApiFetch(path, options = {}) {
     requestHeaders.Authorization = `Bearer ${authToken}`;
   }
 
-  const response = await fetch(`${ADMIN_API_BASE_URL}${path}`, {
-    method,
-    headers: requestHeaders,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  });
+  const requestUrl = adminApiUrl(path);
+  let response;
+  try {
+    response = await fetch(requestUrl, {
+      method,
+      headers: requestHeaders,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+  } catch (error) {
+    throw new Error(`Unable to reach API at ${requestUrl}`);
+  }
 
   const contentType = response.headers.get("content-type") || "";
   const isJson = contentType.includes("application/json");

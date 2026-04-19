@@ -7,6 +7,7 @@ import CartPage from "./pages/CartPage.jsx";
 import OrdersPage from "./pages/OrdersPage.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import AdminUsersPage from "./pages/AdminUsersPage.jsx";
+import AdminLoginPage from "./pages/AdminLoginPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
@@ -40,6 +41,7 @@ function AppRoutes() {
     <Routes>
       <Route path="/admin" element={<AdminSection />}>
         <Route index element={<AdminPage />} />
+        <Route path="login" element={<AdminLoginPage />} />
         <Route path="users" element={<AdminUsersPage />} />
       </Route>
       <Route path="/" element={<HomePage />} />

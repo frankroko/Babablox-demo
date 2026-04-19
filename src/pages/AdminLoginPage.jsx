@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import PageShell from "../components/PageShell.jsx";
 import { toastError, toastSuccess, toastWarning } from "../utils/alerts.js";
 import { adminApiFetch } from "../utils/admin-api.js";
@@ -24,11 +24,16 @@ function clearAdminRememberedEmail() {
 
 export default function AdminLoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { adminUser, setAdminUser: setAdminUserState, refreshAdminAuth } = useAdminContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
+  const adminTarget =
+    location.pathname.startsWith("/admin") && location.pathname !== "/admin/login"
+      ? location.pathname
+      : "/admin";
 
   useEffect(() => {
     const remembered = getAdminRememberedEmail();
@@ -40,9 +45,9 @@ export default function AdminLoginPage() {
 
   useEffect(() => {
     if (adminUser?.role === "admin") {
-      navigate("/admin");
+      navigate(adminTarget, { replace: true });
     }
-  }, [adminUser, navigate]);
+  }, [adminTarget, adminUser, navigate]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -77,7 +82,7 @@ export default function AdminLoginPage() {
       await refreshAdminAuth();
 
       await toastSuccess("เข้าสู่ระบบแอดมินสำเร็จ", "ยินดีต้อนรับ");
-      navigate("/admin");
+      navigate(adminTarget, { replace: true });
     } catch (error) {
       await toastError("เข้าสู่ระบบไม่สำเร็จ", error.message || "กรุณาลองใหม่อีกครั้ง");
     } finally {

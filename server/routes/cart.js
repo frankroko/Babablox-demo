@@ -92,7 +92,7 @@ router.patch(
     }
 
     if (qty <= 0) {
-      item.remove();
+      cart.items.pull(itemId);
     } else {
       item.quantity = qty;
     }
@@ -114,7 +114,7 @@ router.delete(
       return;
     }
 
-    item.remove();
+    cart.items.pull(itemId);
     await cart.save();
     res.json(cart);
   })

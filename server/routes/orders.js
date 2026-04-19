@@ -79,7 +79,8 @@ router.get(
       return;
     }
 
-    const isOwner = order.user.toString() === req.user._id.toString();
+    const orderUserId = order.user?._id || order.user;
+    const isOwner = orderUserId?.toString() === req.user._id.toString();
     if (!isOwner && req.user.role !== "admin") {
       res.status(403).json({ error: "Access denied" });
       return;

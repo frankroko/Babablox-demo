@@ -17,8 +17,32 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const corsOrigin = process.env.CORS_ORIGIN;
-const corsOptions = corsOrigin
-  ? { origin: corsOrigin.split(",").map((item) => item.trim()), credentials: true }
+const configuredCorsOrigins = corsOrigin
+  ? corsOrigin.split(",").map((item) => item.trim()).filter(Boolean)
+  : [];
+const isLocalOrigin = (origin) => {
+  try {
+    const { hostname } = new URL(origin);
+    return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
+  } catch (error) {
+    return false;
+  }
+};
+const corsOptions = configuredCorsOrigins.length
+  ? {
+      origin(origin, callback) {
+        if (
+          !origin ||
+          configuredCorsOrigins.includes(origin) ||
+          (process.env.NODE_ENV !== "production" && isLocalOrigin(origin))
+        ) {
+          callback(null, true);
+          return;
+        }
+        callback(null, false);
+      },
+      credentials: true,
+    }
   : { origin: "*", credentials: false };
 
 app.use(cors(corsOptions));
@@ -39,7 +63,7 @@ app.use("/api/admin", adminRoutes);
 const clientDistPath = path.join(__dirname, "..", "dist");
 if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
-  app.get("*", (req, res) => {
+  app.get(/^\/(?!api(?:\/|$)).*/, (req, res) => {
     res.sendFile(path.join(clientDistPath, "index.html"));
   });
 }

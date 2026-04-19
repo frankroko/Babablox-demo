@@ -35,6 +35,10 @@ router.patch(
         res.status(400).json({ error: "Invalid role" });
         return;
       }
+      if (req.user._id.toString() === id && role !== user.role) {
+        res.status(400).json({ error: "Cannot change your own role" });
+        return;
+      }
       user.role = role;
     }
 
@@ -46,6 +50,7 @@ router.patch(
 
     res.json({
       id: user._id,
+      _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
