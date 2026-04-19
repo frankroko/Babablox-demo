@@ -5,6 +5,8 @@ import Cart from "../models/Cart.js";
 import Order from "../models/Order.js";
 
 const router = express.Router();
+const orderStatuses = new Set(["pending", "fulfilled", "cancelled"]);
+const paymentStatuses = new Set(["unpaid", "paid", "refunded"]);
 
 router.post(
   "/",
@@ -102,11 +104,25 @@ router.patch(
       return;
     }
 
-    if (status) {
+    if (status !== undefined) {
+      if (!orderStatuses.has(status)) {
+        res.status(400).json({ error: "Invalid order status" });
+        return;
+      }
       order.status = status;
     }
-    if (paymentStatus) {
+    if (paymentStatus !== undefined) {
+      if (!paymentStatuses.has(paymentStatus)) {
+        res.status(400).json({ error: "Invalid payment status" });
+        return;
+      }
       order.paymentStatus = paymentStatus;
+    }
+    if (order.status === "paid") {
+      order.status = "pending";
+      if (paymentStatus === undefined) {
+        order.paymentStatus = "paid";
+      }
     }
 
     await order.save();

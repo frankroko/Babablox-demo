@@ -97,6 +97,7 @@ When adding routes, update `src/App.jsx` and keep route ownership clear between 
 - User carts snapshot product name, price, image, and quantity at add-to-cart time.
 - Creating an order snapshots cart items, computes subtotal server-side, then clears the cart.
 - Admin order status updates happen through `PATCH /api/orders/:id/status`.
+- Order `status` tracks fulfillment only (`pending`, `fulfilled`, `cancelled`); payment state belongs in `paymentStatus` (`unpaid`, `paid`, `refunded`).
 - Admin user management lives under `/api/admin/users`.
 
 Preserve these boundaries unless the task explicitly changes product requirements.

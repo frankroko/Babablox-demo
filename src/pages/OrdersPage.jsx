@@ -19,7 +19,6 @@ function currency(value) {
 
 const statusMap = {
   pending: { label: "รอดำเนินการ", classes: "bg-amber-100 text-amber-700" },
-  paid: { label: "ชำระเงินแล้ว", classes: "bg-blue-100 text-blue-700" },
   fulfilled: { label: "สำเร็จ", classes: "bg-emerald-100 text-emerald-700" },
   cancelled: { label: "ยกเลิก", classes: "bg-rose-100 text-rose-700" },
 };

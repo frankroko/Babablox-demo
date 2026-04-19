@@ -3,7 +3,9 @@ import PageShell from "../components/PageShell.jsx";
 import { adminApiFetch } from "../utils/admin-api.js";
 import { confirmAction, toastError, toastSuccess } from "../utils/alerts.js";
 
-const statusOptions = ["pending", "paid", "fulfilled", "cancelled"];
+const statusOptions = ["pending", "fulfilled", "cancelled"];
+const normalizeOrderStatus = (status) =>
+  statusOptions.includes(status) ? status : "pending";
 
 function formatDate(iso) {
   const date = new Date(iso);
@@ -342,7 +344,7 @@ export default function AdminPage() {
                 <div className="grid gap-2">
                   <div className="flex flex-wrap items-center gap-2">
                     <select
-                      value={order.status}
+                      value={normalizeOrderStatus(order.status)}
                       onChange={(e) =>
                         handleOrderStatus(order._id, e.target.value, order.paymentStatus)
                       }
@@ -357,7 +359,7 @@ export default function AdminPage() {
                     <select
                       value={order.paymentStatus || "unpaid"}
                       onChange={(e) =>
-                        handleOrderStatus(order._id, order.status, e.target.value)
+                        handleOrderStatus(order._id, normalizeOrderStatus(order.status), e.target.value)
                       }
                       className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700"
                     >

@@ -161,7 +161,7 @@ Notes:
 - Orders route (`/orders`) requires login.
 - Admin routes use a separate `adminAuthToken` localStorage key.
 - Admin accounts can manage products, users, and orders, but cannot use carts or place orders.
-- Order status values are `pending`, `paid`, `fulfilled`, and `cancelled`.
+- Order status values are `pending`, `fulfilled`, and `cancelled`; payment status values are `unpaid`, `paid`, and `refunded`.
 - The mobile navbar uses a burger menu with an animated close state.
 - The frontend now uses the backend APIs for auth, cart, and orders.
 

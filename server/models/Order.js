@@ -18,11 +18,15 @@ const orderSchema = new mongoose.Schema(
     subtotal: { type: Number, required: true, min: 0 },
     status: {
       type: String,
-      enum: ["pending", "paid", "fulfilled", "cancelled"],
+      enum: ["pending", "fulfilled", "cancelled"],
       default: "pending",
     },
     paymentMethod: { type: String, default: "unspecified" },
-    paymentStatus: { type: String, default: "unpaid" },
+    paymentStatus: {
+      type: String,
+      enum: ["unpaid", "paid", "refunded"],
+      default: "unpaid",
+    },
     shippingAddress: {
       name: String,
       line1: String,
